@@ -1,0 +1,38 @@
+:root {
+  --primary-color: #3b82f6;
+}
+
+body {
+  background: #050505;
+  font-family: 'Tajawal', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.glass-card {
+  width: 350px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.05); /* شفافية خفيفة */
+  backdrop-filter: blur(15px); /* تأثير الضباب الزجاجي */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.shine {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: 0.5s;
+}
+
+.glass-card:hover .shine {
+  left: 100%;
+  transition: 0.8s;
+}
