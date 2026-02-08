@@ -1,99 +1,98 @@
-/**
- * AI Card Studio - Logic Engine
- * وظيفة الملف: التحكم في التنقل، تحديث البيانات لحظياً، وتصدير الصورة
- */
+// مصفوفة الأسئلة (نموذج لـ 3 أسئلة - يمكن تكرار الهيكل لـ 30 سؤالاً)
+const questions = [
+    { id: 1, text: "كم مرة تتفقد هاتفك فور استيقاظك من النوم؟", weight: 3 },
+    { id: 2, text: "هل تجد صعوبة في التركيز على قراءة نص طويل لأكثر من 5 دقائق؟", weight: 4 },
+    { id: 3, text: "هل تشعر بالحاجة لفتح تطبيق آخر أثناء مشاهدة فيلم أو فيديو؟", weight: 3 },
+    // ... أضف باقي الـ 30 سؤالاً هنا بنفس النمط
+];
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. تعريف العناصر (DOM Elements)
-    const inputs = {
-        name: document.getElementById('nameInput'),
-        job: document.getElementById('jobInput'),
-        phone: document.getElementById('phoneInput'),
-        email: document.getElementById('emailInput')
-    };
+let currentStep = 0;
+let userAnswers = [];
+const questionsPerPage = 3;
 
-    const preview = {
-        name: document.getElementById('cardName'),
-        job: document.getElementById('cardJob'),
-        phone: document.getElementById('cardPhone'),
-        email: document.getElementById('cardEmail')
-    };
+document.getElementById('start-assessment').addEventListener('click', function() {
+    const name = document.getElementById('user-name').value;
+    if (!name) return alert("يرجى إدخال الاسم للمتابعة البروتوكولية.");
+    
+    document.getElementById('display-name').innerText = name;
+    transitionStep(1, 2);
+    renderQuestions();
+});
 
-    const panels = {
-        form: document.getElementById('formPanel'),
-        loader: document.getElementById('loader'),
-        preview: document.getElementById('previewSection')
-    };
+function renderQuestions() {
+    const container = document.getElementById('questionnaire-engine');
+    container.innerHTML = ""; // مسح المحتوى الحالي
+    
+    const start = currentStep * questionsPerPage;
+    const end = start + questionsPerPage;
+    const currentBatch = questions.slice(start, end);
 
-    // 2. التحديث اللحظي (Live Sync)
-    // هذه الوظيفة تجعل المستخدم يرى التغييرات فور كتابتها
-    const syncData = () => {
-        preview.name.innerText = inputs.name.value || "الاسم الكامل";
-        preview.job.innerText = inputs.job.value || "المسمى الوظيفي";
-        preview.phone.innerText = inputs.phone.value ? `هاتف: ${inputs.phone.value}` : "رقم الهاتف";
-        preview.email.innerText = inputs.email.value ? `بريد: ${inputs.email.value}` : "البريد الإلكتروني";
-    };
-
-    // ربط المدخلات بحدث الكتابة
-    Object.values(inputs).forEach(input => {
-        input.addEventListener('input', syncData);
+    currentBatch.forEach((q, index) => {
+        const questionHtml = `
+            <div class="question-card" style="animation-delay: ${index * 0.1}s">
+                <p class="question-text">${q.text}</p>
+                <div class="options-grid">
+                    ${[
+                        {label: 'نادراً', val: 0}, 
+                        {label: 'أحياناً', val: 5}, 
+                        {label: 'غالباً', val: 10}
+                    ].map(opt => `
+                        <label class="option-card">
+                            <input type="radio" name="q${q.id}" value="${opt.val}" onchange="saveAnswer(${q.id}, ${opt.val})">
+                            <span class="option-label">${opt.label}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        container.innerHTML += questionHtml;
     });
 
-    // 3. التحكم في الخطوات (Navigation)
-    window.nextStep = (stepNumber) => {
-        // التحقق من إدخال البيانات الأساسية في الخطوة الأولى
-        if (stepNumber === 2 && !inputs.name.value) {
-            alert("يرجى إدخال الاسم أولاً لإبهار الجميع!");
-            return;
-        }
-        
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById(`step${stepNumber}`).classList.add('active');
-    };
+    updateProgressBar();
+}
 
-    // 4. محاكاة توليد الذكاء الاصطناعي (AI Simulation)
-    window.generateCard = () => {
-        panels.form.style.display = 'none';
-        panels.loader.style.display = 'block';
+function saveAnswer(qId, value) {
+    userAnswers[qId] = value;
+}
 
-        // محاكاة وقت المعالجة ليعطي شعوراً بالفخامة
-        setTimeout(() => {
-            panels.loader.style.display = 'none';
-            panels.preview.style.display = 'block';
-            
-            // إضافة تأثير حركي عند ظهور البطاقة
-            document.getElementById('businessCard').style.animation = 'fadeIn 1s ease-out';
-            
-            // إعادة تفعيل الأيقونات إذا لزم الأمر
-            if (window.lucide) lucide.createIcons();
-        }, 2500);
-    };
-
-    // 5. وظيفة تحميل الصورة (Download Logic)
-    window.downloadCard = () => {
-        const cardElement = document.getElementById('businessCard');
-        const btn = document.querySelector('.btn-primary[onclick="downloadCard()"]');
-        
-        // تغيير نص الزر أثناء المعالجة
-        btn.innerText = "جاري التحضير...";
-        btn.style.opacity = '0.7';
-
-        html2canvas(cardElement, {
-            backgroundColor: null, // خلفية شفافة
-            scale: 3, // دقة عالية جداً للطباعة (3x)
-            useCORS: true,
-            logging: false
-        }).then(canvas => {
-            const image = canvas.toDataURL("image/png");
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `AI-Card-${inputs.name.value || 'Studio'}.png`;
-            link.click();
-            
-            // إعادة الزر لحالته الطبيعية
-            btn.innerHTML = 'تحميل البطاقة كصورة <i data-lucide="download"></i>';
-            btn.style.opacity = '1';
-            lucide.createIcons();
-        });
-    };
+document.getElementById('next-step').addEventListener('click', function() {
+    if (currentStep < (questions.length / questionsPerPage) - 1) {
+        currentStep++;
+        renderQuestions();
+        document.getElementById('current-step').innerText = currentStep + 1;
+    } else {
+        showResults();
+    }
 });
+
+function showResults() {
+    transitionStep(2, 3); // الانتقال لشاشة التحميل
+    
+    setTimeout(() => {
+        const totalScore = userAnswers.reduce((a, b) => (a || 0) + (b || 0), 0);
+        const maxScore = questions.length * 10;
+        const percentage = Math.round((totalScore / maxScore) * 100);
+        
+        document.getElementById('decay-percentage').innerText = percentage + "%";
+        document.getElementById('cert-score').innerText = percentage + "%";
+        
+        // تحريك حلقة النسبة (SVG)
+        const circle = document.getElementById('score-fill');
+        const offset = 283 - (283 * percentage / 100);
+        circle.style.strokeDashoffset = offset;
+
+        transitionStep(3, 4); // الانتقال للنتيجة النهائية
+    }, 3000);
+}
+
+function transitionStep(from, to) {
+    document.getElementById(`step-${from}`).classList.remove('active');
+    document.getElementById(`step-${from}`).classList.add('hidden');
+    document.getElementById(`step-${to}`).classList.remove('hidden');
+    document.getElementById(`step-${to}`).classList.add('active');
+}
+
+function updateProgressBar() {
+    const progress = ((currentStep + 1) / (questions.length / questionsPerPage)) * 100;
+    document.getElementById('main-progress-bar').style.width = `${progress}%`;
+}
