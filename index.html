@@ -1,12 +1,283 @@
-<div class="card-container">
-  <div class="glass-card" id="businessCard">
-    <div class="card-content">
-      <h2 id="previewName">أحمد محمد</h2>
-      <p id="previewJob">مصمم واجهات</p>
-      <div class="contact-info">
-        <span id="previewPhone">+966 500...</span>
-      </div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Card Studio | مصمم البطاقات الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* الخلفية المتحركة */
+        .blob {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.2;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-50%, -50%); }
+            to { transform: translate(50%, 50%); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* حاوية النموذج والبطاقة */
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; margin-right: 5px; }
+
+        input {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+
+        /* تصميم البطاقة المعاينة */
+        #businessCard {
+            width: 100%;
+            aspect-ratio: 1.58 / 1;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .card-bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.1;
+            background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .card-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .card-job { color: var(--primary); font-size: 0.9rem; letter-spacing: 1px; }
+        .card-contact { font-size: 0.8rem; color: #cbd5e1; margin-top: auto; line-height: 1.6; }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--glass);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+
+    <header>
+        <div class="logo-icon"><i data-lucide="sparkles"></i></div>
+        <h1>AI Card Studio</h1>
+        <p style="color: #64748b; margin-top: 5px;">صمم هويتك المهنية في ثوانٍ</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="glass-panel" id="formPanel">
+            <div class="step active" id="step1">
+                <label>الاسم الكامل</label>
+                <input type="text" id="nameInput" placeholder="مثلاً: محمد العتيبي">
+                <label>المهنة / المسمى الوظيفي</label>
+                <input type="text" id="jobInput" placeholder="مثلاً: مطور برمجيات">
+                <button class="btn btn-primary" onclick="nextStep(2)">التالي <i data-lucide="arrow-left"></i></button>
+            </div>
+
+            <div class="step" id="step2">
+                <label>رقم الهاتف</label>
+                <input type="text" id="phoneInput" placeholder="+966 5xxx">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="emailInput" placeholder="name@company.com">
+                <button class="btn btn-primary" onclick="generateCard()">توليد البطاقة الذكية <i data-lucide="wand-2"></i></button>
+            </div>
+        </div>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>الذكاء الاصطناعي يصمم بطاقتك...</p>
+        </div>
+
+        <div id="previewSection" style="display: none;">
+            <div id="businessCard">
+                <div class="card-bg-pattern"></div>
+                <div>
+                    <div class="card-name" id="cardName">الاسم الكامل</div>
+                    <div class="card-job" id="cardJob">المسمى الوظيفي</div>
+                </div>
+                <div class="card-contact">
+                    <div id="cardPhone">تلفون</div>
+                    <div id="cardEmail">ايميل</div>
+                </div>
+                <i data-lucide="cpu" style="position: absolute; bottom: 25px; left: 25px; opacity: 0.2;"></i>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 25px; background: #10b981;" onclick="downloadCard()">
+                تحميل البطاقة كصورة <i data-lucide="download"></i>
+            </button>
+            <button class="btn" style="margin-top: 10px; background: transparent; color: #64748b;" onclick="location.reload()">
+                إنشاء بطاقة جديدة
+            </button>
+        </div>
     </div>
-    <div class="shine"></div>
-  </div>
-</div>
+
+    <script>
+        // تفعيل الأيقونات
+        lucide.createIcons();
+
+        function nextStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+        }
+
+        function generateCard() {
+            // إخفاء النموذج وإظهار التحميل
+            document.getElementById('formPanel').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            // محاكاة "الذكاء الاصطناعي"
+            setTimeout(() => {
+                // نقل البيانات للبطاقة
+                document.getElementById('cardName').innerText = document.getElementById('nameInput').value || "أحمد محمد";
+                document.getElementById('cardJob').innerText = document.getElementById('jobInput').value || "مصمم محترف";
+                document.getElementById('cardPhone').innerText = "هاتف: " + (document.getElementById('phoneInput').value || "غير مسجل");
+                document.getElementById('cardEmail').innerText = "بريد: " + (document.getElementById('emailInput').value || "غير مسجل");
+
+                // إظهار النتيجة
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('previewSection').style.display = 'block';
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function downloadCard() {
+            const card = document.getElementById('businessCard');
+            html2canvas(card, {
+                backgroundColor: null,
+                scale: 2 // جودة عالية
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'My-AI-Card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
