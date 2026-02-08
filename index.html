@@ -3,281 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Card Studio | مصمم البطاقات الذكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <style>
-        :root {
-            --primary: #3b82f6;
-            --secondary: #8b5cf6;
-            --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-            padding: 20px;
-        }
-
-        /* الخلفية المتحركة */
-        .blob {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            filter: blur(120px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.2;
-            animation: move 20s infinite alternate;
-        }
-
-        @keyframes move {
-            from { transform: translate(-50%, -50%); }
-            to { transform: translate(50%, 50%); }
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            margin-top: 20px;
-        }
-
-        .logo-icon {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            width: 60px;
-            height: 60px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        /* حاوية النموذج والبطاقة */
-        .container {
-            width: 100%;
-            max-width: 450px;
-        }
-
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; margin-right: 5px; }
-
-        input {
-            width: 100%;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 15px;
-            color: white;
-            margin-bottom: 20px;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255,255,255,0.07);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 15px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
-
-        /* تصميم البطاقة المعاينة */
-        #businessCard {
-            width: 100%;
-            aspect-ratio: 1.58 / 1;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .card-bg-pattern {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.1;
-            background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
-            background-size: 20px 20px;
-            pointer-events: none;
-        }
-
-        .card-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
-        .card-job { color: var(--primary); font-size: 0.9rem; letter-spacing: 1px; }
-        .card-contact { font-size: 0.8rem; color: #cbd5e1; margin-top: auto; line-height: 1.6; }
-
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--glass);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-    </style>
+    <title>تقييم السلامة الإدراكية | Cognitive Integrity Assessment</title>
 </head>
-<body>
+<body class="medical-theme dark-mode">
 
-    <div class="blob"></div>
-
-    <header>
-        <div class="logo-icon"><i data-lucide="sparkles"></i></div>
-        <h1>AI Card Studio</h1>
-        <p style="color: #64748b; margin-top: 5px;">صمم هويتك المهنية في ثوانٍ</p>
+    <header class="app-header">
+        <div class="progress-container">
+            <div id="main-progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
     </header>
 
-    <div class="container">
+    <main class="app-container">
         
-        <div class="glass-panel" id="formPanel">
-            <div class="step active" id="step1">
-                <label>الاسم الكامل</label>
-                <input type="text" id="nameInput" placeholder="مثلاً: محمد العتيبي">
-                <label>المهنة / المسمى الوظيفي</label>
-                <input type="text" id="jobInput" placeholder="مثلاً: مطور برمجيات">
-                <button class="btn btn-primary" onclick="nextStep(2)">التالي <i data-lucide="arrow-left"></i></button>
+        <section id="step-1" class="view-section active">
+            <div class="brand-identity">
+                <div class="logo-icon">◈</div>
+                <h1>بروتوكول تقييم السلامة الإدراكية</h1>
+                <p class="subtitle">تحليل منهجي لأنماط الاستهلاك الرقمي وتأثيرها على الوظائف العصبية.</p>
             </div>
 
-            <div class="step" id="step2">
-                <label>رقم الهاتف</label>
-                <input type="text" id="phoneInput" placeholder="+966 5xxx">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="emailInput" placeholder="name@company.com">
-                <button class="btn btn-primary" onclick="generateCard()">توليد البطاقة الذكية <i data-lucide="wand-2"></i></button>
+            <div class="input-group">
+                <label for="user-name">اسم المستخدم المعرف:</label>
+                <input type="text" id="user-name" placeholder="أدخل اسمك الكامل..." autocomplete="off">
+                <button id="start-assessment" class="btn-primary">بدء التحليل المخبري</button>
             </div>
-        </div>
+            
+            <footer class="disclaimer">
+                * هذا التقييم يعتمد على معايير السلوك الرقمي الحديث ولا يعد تشخيصاً طبياً نهائياً.
+            </footer>
+        </section>
 
-        <div class="loader" id="loader">
-            <div class="spinner"></div>
-            <p>الذكاء الاصطناعي يصمم بطاقتك...</p>
-        </div>
+        <section id="step-2" class="view-section hidden">
+            <div class="step-indicator">المرحلة <span id="current-step">1</span> من 10</div>
+            
+            <div id="questionnaire-engine" class="question-container">
+                <div class="question-page" data-page="1">
+                    <div class="question-card">
+                        <p class="question-text">كم عدد الساعات التي تقضيها في تصفح المحتوى القصير (Short-form content) يومياً؟</p>
+                        <div class="options-grid">
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="0">
+                                <span class="option-label">أقل من ساعة</span>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="1">
+                                <span class="option-label">1 - 3 ساعات</span>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="2">
+                                <span class="option-label">أكثر من 5 ساعات</span>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+            </div>
 
-        <div id="previewSection" style="display: none;">
-            <div id="businessCard">
-                <div class="card-bg-pattern"></div>
-                <div>
-                    <div class="card-name" id="cardName">الاسم الكامل</div>
-                    <div class="card-job" id="cardJob">المسمى الوظيفي</div>
+            <div class="navigation-controls">
+                <button id="next-step" class="btn-secondary">المتابعة</button>
+            </div>
+        </section>
+
+        <section id="step-3" class="view-section hidden">
+            <div class="loader-container">
+                <div class="scanner-line"></div>
+                <div class="loading-spinner"></div>
+                <h2>جاري تحليل البيانات الإدراكية...</h2>
+                <p>يتم الآن قياس معدلات التحلل الرقمي بناءً على استجاباتك.</p>
+            </div>
+        </section>
+
+        <section id="step-4" class="view-section hidden">
+            <div class="results-dashboard">
+                <header class="results-header">
+                    <span class="badge">التقرير النهائي</span>
+                    <h2>نتائج الفحص العصبي الرقمي</h2>
+                </header>
+
+                <div class="score-display">
+                    <svg class="score-ring" viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+                        <circle id="score-fill" class="ring-fill" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <div class="score-text">
+                        <span id="decay-percentage">0%</span>
+                        <small>نسبة التحلل الإدراكي</small>
+                    </div>
                 </div>
-                <div class="card-contact">
-                    <div id="cardPhone">تلفون</div>
-                    <div id="cardEmail">ايميل</div>
+
+                <div id="clinical-summary" class="summary-box">
+                    <p>بناءً على التقييم، تظهر الوظائف الإدراكية حالة من [الحالة التقديرية].</p>
                 </div>
-                <i data-lucide="cpu" style="position: absolute; bottom: 25px; left: 25px; opacity: 0.2;"></i>
+
+                <div id="shareable-report-card" class="certificate-card">
+                    <div class="cert-border">
+                        <div class="cert-header">
+                            <h3>شهادة الحالة الإدراكية</h3>
+                            <p>صادرة عن مختبر التحليل الرقمي</p>
+                        </div>
+                        <div class="cert-body">
+                            <p class="patient-name">المريض: <span id="display-name">---</span></p>
+                            <div class="cert-result">
+                                <span class="label">مؤشر السلامة:</span>
+                                <span id="cert-score" class="value">0%</span>
+                            </div>
+                            <p class="cert-date">تاريخ الفحص: 2026/02/08</p>
+                        </div>
+                        <div class="cert-footer">
+                            <div class="qr-placeholder">QR-CODE</div>
+                            <div class="stamp">CERTIFIED</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="download-report" class="btn-outline">تحميل التقرير PDF</button>
+                    <button id="share-social" class="btn-primary">مشاركة النتيجة</button>
+                </div>
             </div>
+        </section>
 
-            <button class="btn btn-primary" style="margin-top: 25px; background: #10b981;" onclick="downloadCard()">
-                تحميل البطاقة كصورة <i data-lucide="download"></i>
-            </button>
-            <button class="btn" style="margin-top: 10px; background: transparent; color: #64748b;" onclick="location.reload()">
-                إنشاء بطاقة جديدة
-            </button>
-        </div>
-    </div>
+    </main>
 
-    <script>
-        // تفعيل الأيقونات
-        lucide.createIcons();
+    <footer class="app-footer">
+        <p>&copy; 2026 مركز أبحاث السلامة الرقمية</p>
+    </footer>
 
-        function nextStep(step) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
-        }
-
-        function generateCard() {
-            // إخفاء النموذج وإظهار التحميل
-            document.getElementById('formPanel').style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
-
-            // محاكاة "الذكاء الاصطناعي"
-            setTimeout(() => {
-                // نقل البيانات للبطاقة
-                document.getElementById('cardName').innerText = document.getElementById('nameInput').value || "أحمد محمد";
-                document.getElementById('cardJob').innerText = document.getElementById('jobInput').value || "مصمم محترف";
-                document.getElementById('cardPhone').innerText = "هاتف: " + (document.getElementById('phoneInput').value || "غير مسجل");
-                document.getElementById('cardEmail').innerText = "بريد: " + (document.getElementById('emailInput').value || "غير مسجل");
-
-                // إظهار النتيجة
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('previewSection').style.display = 'block';
-                lucide.createIcons();
-            }, 2000);
-        }
-
-        function downloadCard() {
-            const card = document.getElementById('businessCard');
-            html2canvas(card, {
-                backgroundColor: null,
-                scale: 2 // جودة عالية
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'My-AI-Card.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-    </script>
 </body>
 </html>
